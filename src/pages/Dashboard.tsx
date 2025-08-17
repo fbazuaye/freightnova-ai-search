@@ -82,6 +82,17 @@ const Dashboard = () => {
           setPreviewDocument(null);
         }}
       />
+
+      {/* Footer */}
+      <footer className="mt-16 py-8 border-t border-border bg-background/50">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
+              Designed and Powered By <span className="font-medium text-primary">LiveGig Ltd</span>
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
