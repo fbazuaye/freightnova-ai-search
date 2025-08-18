@@ -12,28 +12,7 @@ interface QuickTabsProps {
   onTabChange: (tabId: string) => void;
 }
 
-const tabs: Tab[] = [
-  {
-    id: "cargo-space",
-    label: "Cargo Space",
-    icon: <Ship className="w-4 h-4" />
-  },
-  {
-    id: "bookings",
-    label: "Bookings", 
-    icon: <Package className="w-4 h-4" />
-  },
-  {
-    id: "bills-lading",
-    label: "Bills of Lading",
-    icon: <FileText className="w-4 h-4" />
-  },
-  {
-    id: "tracking",
-    label: "Container Tracking",
-    icon: <MapPin className="w-4 h-4" />
-  }
-];
+const tabs: Tab[] = [];
 
 export const QuickTabs = ({ activeTab, onTabChange }: QuickTabsProps) => {
   return (
