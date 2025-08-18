@@ -122,16 +122,16 @@
   }
   
   .search-input {
-    @apply w-full pl-12 pr-4 py-4 text-lg bg-white border border-gray-200 rounded-full shadow-lg hover:shadow-xl focus:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/20;
+    @apply w-full pl-10 sm:pl-12 pr-12 sm:pr-16 py-3 sm:py-4 text-base sm:text-lg bg-white border border-gray-200 rounded-full shadow-lg hover:shadow-xl focus:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/20;
   }
   
   .search-icon {
-    @apply absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground;
+    @apply absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground;
   }
   
   /* Tab styling */
   .tab-button {
-    @apply px-6 py-3 rounded-full text-sm font-medium transition-all duration-200 hover:bg-secondary;
+    @apply px-4 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:bg-secondary;
   }
   
   .tab-button.active {
@@ -140,7 +140,7 @@
   
   /* Result card styling */
   .result-card {
-    @apply bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100;
+    @apply bg-white rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100;
   }
   
   /* Status badges */

@@ -34,15 +34,15 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
       {/* Header */}
       <motion.header 
-        className="py-8"
+        className="py-4 sm:py-6 lg:py-8"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-6 sm:mb-8">
             <motion.h1 
-              className="text-4xl font-bold text-primary mb-2"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary mb-2"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -50,7 +50,7 @@ const Dashboard = () => {
               FreightNova
             </motion.h1>
             <motion.p 
-              className="text-lg text-muted-foreground"
+              className="text-base sm:text-lg lg:text-xl text-muted-foreground px-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
@@ -65,7 +65,7 @@ const Dashboard = () => {
       </motion.header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 pb-8">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <ResultsDisplay 
           activeTab={activeTab} 
           searchQuery={searchQuery}
@@ -84,10 +84,10 @@ const Dashboard = () => {
       />
 
       {/* Footer */}
-      <footer className="mt-16 py-8 border-t border-border bg-background/50">
-        <div className="container mx-auto px-4">
+      <footer className="mt-8 sm:mt-12 lg:mt-16 py-6 sm:py-8 border-t border-border bg-background/50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Designed and Powered By <span className="font-medium text-primary">LiveGig Ltd</span>
             </p>
           </div>

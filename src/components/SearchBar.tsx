@@ -20,13 +20,13 @@ export const SearchBar = ({ onSearch, placeholder = "Search for cargo space, boo
 
   return (
     <motion.div 
-      className="search-bar"
+      className="search-bar px-4 sm:px-0"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <form onSubmit={handleSubmit} className="relative">
-        <Search className="search-icon w-5 h-5" />
+        <Search className="search-icon w-4 h-4 sm:w-5 sm:h-5" />
         <input
           type="text"
           value={query}
@@ -38,10 +38,10 @@ export const SearchBar = ({ onSearch, placeholder = "Search for cargo space, boo
         />
         <button
           type="button"
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 text-muted-foreground hover:text-primary transition-colors"
+          className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 p-1 sm:p-2 text-muted-foreground hover:text-primary transition-colors"
           title="Voice search"
         >
-          <Mic className="w-5 h-5" />
+          <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </form>
     </motion.div>

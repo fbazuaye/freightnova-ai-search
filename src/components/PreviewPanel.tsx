@@ -19,36 +19,36 @@ export const PreviewPanel = ({ isOpen, document, onClose }: PreviewPanelProps) =
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="fixed right-0 top-0 h-full w-96 bg-white shadow-2xl border-l border-border z-50 flex flex-col"
+          className="fixed right-0 top-0 h-full w-full sm:w-96 lg:w-[28rem] bg-white shadow-2xl border-l border-border z-50 flex flex-col"
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border">
-            <h3 className="text-lg font-semibold text-foreground">{document.title}</h3>
-            <Button variant="ghost" size="sm" onClick={onClose}>
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground truncate pr-2">{document.title}</h3>
+            <Button variant="ghost" size="sm" onClick={onClose} className="flex-shrink-0">
               <X className="w-4 h-4" />
             </Button>
           </div>
 
           {/* Actions */}
-          <div className="flex gap-2 p-4 border-b border-border">
+          <div className="flex flex-col sm:flex-row gap-2 p-4 sm:p-6 border-b border-border">
             <Button variant="outline" size="sm" className="flex-1">
-              <Download className="w-4 h-4 mr-2" />
-              Download
+              <Download className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Download</span>
             </Button>
             <Button variant="outline" size="sm" className="flex-1">
-              <Printer className="w-4 h-4 mr-2" />
-              Print
+              <Printer className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Print</span>
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="sm:w-auto">
               <ExternalLink className="w-4 h-4" />
             </Button>
           </div>
 
           {/* Content */}
-          <div className="flex-1 p-4 overflow-auto">
-            <div className="space-y-4">
+          <div className="flex-1 p-4 sm:p-6 overflow-auto">
+            <div className="space-y-4 sm:space-y-6">
               {/* Document metadata */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
                 <div>
                   <span className="text-muted-foreground">Type:</span>
                   <div className="font-medium">{document.type}</div>
