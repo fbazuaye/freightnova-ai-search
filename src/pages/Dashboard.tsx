@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { RotateCcw } from "lucide-react";
 import { SearchBar } from "../components/SearchBar";
 import { QuickTabs } from "../components/QuickTabs";
 import { ResultsDisplay } from "../components/ResultsDisplay";
@@ -55,11 +56,29 @@ const Dashboard = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              AI-powered freight forwarding search engine
+              AI-powered Shipment tracking & freight search engine
             </motion.p>
           </div>
 
-          <SearchBar onSearch={handleSearch} />
+          <div className="flex items-center gap-2 justify-center">
+            <div className="flex-1 max-w-2xl">
+              <SearchBar onSearch={handleSearch} />
+            </div>
+            {searchQuery && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                onClick={() => {
+                  setSearchQuery("");
+                  setActiveTab("cargo-space");
+                }}
+                className="mt-2 p-2.5 rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
+                title="Reset search"
+              >
+                <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
+              </motion.button>
+            )}
+          </div>
           <QuickTabs activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       </motion.header>
