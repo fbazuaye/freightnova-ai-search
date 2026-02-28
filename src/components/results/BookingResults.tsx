@@ -108,10 +108,15 @@ export const BookingResults = ({ searchQuery, onPreviewDocument }: BookingResult
                       onClick={() => onPreviewDocument({
                         ...booking,
                         details: {
+                          booking_id: booking.id,
+                          customer: booking.customer,
+                          reference: booking.reference,
                           vessel: booking.vessel,
                           route: booking.route,
                           containers: `${booking.containers} TEU`,
-                          etd: booking.etd
+                          booking_date: booking.bookingDate,
+                          etd: booking.etd,
+                          status: booking.status
                         }
                       })}
                     >
