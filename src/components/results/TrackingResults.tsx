@@ -1,7 +1,9 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Ship, Calendar, Bell, CheckCircle2, Clock, Eye, Download } from "lucide-react";
+import { MapPin, Ship, Calendar, Bell, CheckCircle2, Clock, Eye, Download, SearchX } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { extractSearchTerms, matchesSearch } from "@/lib/searchUtils";
 
 interface TrackingResultsProps {
   searchQuery: string;
@@ -352,17 +354,30 @@ const mockTracking = [
 ];
 
 export const TrackingResults = ({ searchQuery, onPreviewDocument }: TrackingResultsProps) => {
+  const searchTerms = useMemo(() => extractSearchTerms(searchQuery), [searchQuery]);
+  const filteredData = useMemo(() => 
+    mockTracking.filter(c => matchesSearch(searchTerms, c.id, c.vessel, c.currentLocation, c.pol, c.pod)),
+    [searchTerms]
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-foreground">Container Tracking</h2>
         <div className="text-sm text-muted-foreground">
-          {mockTracking.length} containers found
+          {filteredData.length} containers found
         </div>
       </div>
 
+      {filteredData.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+          <SearchX className="w-12 h-12 mb-4 opacity-50" />
+          <p className="text-lg font-medium">No matching containers found</p>
+          <p className="text-sm">Try a different container number or keyword</p>
+        </div>
+      ) : (
       <div className="grid gap-6">
-        {mockTracking.map((container, index) => (
+        {filteredData.map((container, index) => (
           <motion.div
             key={container.id}
             initial={{ opacity: 0, y: 20 }}
@@ -506,6 +521,7 @@ export const TrackingResults = ({ searchQuery, onPreviewDocument }: TrackingResu
           </motion.div>
         ))}
       </div>
+      )}
     </div>
   );
 };
