@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Download, Printer, ExternalLink, FileText, Ship, MapPin, Calendar, Package } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { exportToExcel } from "@/lib/excelExport";
 
 interface PreviewPanelProps {
   isOpen: boolean;
@@ -44,7 +45,10 @@ export const PreviewPanel = ({ isOpen, document, onClose }: PreviewPanelProps) =
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-2 p-4 sm:p-6 border-b border-border">
-            <Button variant="outline" size="sm" className="flex-1">
+            <Button variant="outline" size="sm" className="flex-1" onClick={() => {
+              const data = document.details ? { ...document.details } : { id: document.id, title: document.title, status: document.status };
+              exportToExcel([data], `${document.title?.replace(/\s+/g, '_') || 'export'}`);
+            }}>
               <Download className="w-4 h-4 sm:mr-2" />
               <span className="hidden sm:inline">Download</span>
             </Button>
