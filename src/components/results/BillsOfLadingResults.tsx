@@ -119,6 +119,9 @@ export const BillsOfLadingResults = ({ searchQuery, onPreviewDocument }: BillsOf
                       onClick={() => onPreviewDocument({
                         ...bl,
                         details: {
+                          bl_number: bl.id,
+                          customer: bl.customer,
+                          status: bl.status,
                           vessel_voyage: `${bl.vessel} / ${bl.voyage}`,
                           port_of_loading: bl.pol,
                           port_of_discharge: bl.pod,

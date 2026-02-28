@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
-import { MapPin, Ship, Calendar, Bell, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { MapPin, Ship, Calendar, Bell, CheckCircle2, Clock, Eye, Download } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 
 interface TrackingResultsProps {
   searchQuery: string;
+  onPreviewDocument: (document: any) => void;
 }
 
 const mockTracking = [
@@ -15,6 +16,7 @@ const mockTracking = [
     status: "In Transit",
     lastUpdate: "2024-09-17 14:30 UTC",
     eta: "2024-10-02",
+    pol: "Hamburg, Germany",
     pod: "Port Harcourt, Nigeria",
     progress: 65,
     milestones: [
@@ -25,12 +27,13 @@ const mockTracking = [
     ]
   },
   {
-    id: "MSKU1234567", 
+    id: "MSKU1234567",
     vessel: "MSC MEDITERRANEAN",
     currentLocation: "Port of Lagos",
     status: "Discharged",
-    lastUpdate: "2024-09-16 08:45 UTC", 
+    lastUpdate: "2024-09-16 08:45 UTC",
     eta: "Completed",
+    pol: "Shanghai, China",
     pod: "Lagos, Nigeria",
     progress: 100,
     milestones: [
@@ -42,7 +45,7 @@ const mockTracking = [
   }
 ];
 
-export const TrackingResults = ({ searchQuery }: TrackingResultsProps) => {
+export const TrackingResults = ({ searchQuery, onPreviewDocument }: TrackingResultsProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -63,14 +66,14 @@ export const TrackingResults = ({ searchQuery }: TrackingResultsProps) => {
           >
             <div className="space-y-6">
               {/* Header */}
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-primary/10 rounded-lg">
                     <Ship className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <div className="font-semibold text-lg font-mono">{container.id}</div>
-                    <div className="text-sm text-muted-foreground">{container.vessel}</div>
+                    <div className="text-sm text-muted-foreground">on the {container.vessel}</div>
                   </div>
                   <Badge 
                     variant={container.status === 'Discharged' ? 'default' : 
@@ -78,14 +81,46 @@ export const TrackingResults = ({ searchQuery }: TrackingResultsProps) => {
                     className="ml-2"
                   >
                     {container.status === 'Discharged' && <CheckCircle2 className="w-3 h-3 mr-1" />}
-                    {container.status === 'In Transit' && <Clock className="w-3 h-3 mr-1" />}
+                    {container.status === 'In Transit' && (
+                      <span className="relative flex h-2 w-2 mr-1.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                      </span>
+                    )}
                     {container.status}
                   </Badge>
                 </div>
-                <Button variant="outline" size="sm">
-                  <Bell className="w-4 h-4 mr-2" />
-                  Set Notification
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => onPreviewDocument({
+                      title: `Container Tracking - ${container.id}`,
+                      type: "Container Tracking",
+                      date: container.lastUpdate,
+                      status: container.status,
+                      reference: container.id,
+                      details: {
+                        container_id: container.id,
+                        vessel: container.vessel,
+                        current_location: container.currentLocation,
+                        port_of_loading: container.pol,
+                        port_of_discharge: container.pod,
+                        eta: container.eta,
+                        last_update: container.lastUpdate,
+                        journey_progress: `${container.progress}%`,
+                        milestones: container.milestones.map(m => `${m.status} at ${m.location} (${m.date})`).join(' → ')
+                      }
+                    })}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    Preview
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Bell className="w-4 h-4 mr-2" />
+                    Set Notification
+                  </Button>
+                </div>
               </div>
 
               {/* Current Status */}

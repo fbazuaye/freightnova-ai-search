@@ -20,7 +20,7 @@ export const ResultsDisplay = ({ activeTab, searchQuery, onPreviewDocument }: Re
       case "bills-lading":
         return <BillsOfLadingResults searchQuery={searchQuery} onPreviewDocument={onPreviewDocument} />;
       case "tracking":
-        return <TrackingResults searchQuery={searchQuery} />;
+        return <TrackingResults searchQuery={searchQuery} onPreviewDocument={onPreviewDocument} />;
       default:
         return null;
     }

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Download, Printer, ExternalLink } from "lucide-react";
+import { X, Download, Printer, ExternalLink, FileText, Ship, MapPin, Calendar, Package } from "lucide-react";
 import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 
 interface PreviewPanelProps {
   isOpen: boolean;
@@ -10,6 +11,15 @@ interface PreviewPanelProps {
 
 export const PreviewPanel = ({ isOpen, document, onClose }: PreviewPanelProps) => {
   if (!document) return null;
+
+  const getTypeIcon = () => {
+    switch (document.type) {
+      case "Container Tracking": return <Ship className="w-5 h-5 text-primary" />;
+      case "Bill of Lading": return <FileText className="w-5 h-5 text-primary" />;
+      case "Booking Confirmation": return <Package className="w-5 h-5 text-primary" />;
+      default: return <FileText className="w-5 h-5 text-primary" />;
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -23,7 +33,10 @@ export const PreviewPanel = ({ isOpen, document, onClose }: PreviewPanelProps) =
         >
           {/* Header */}
           <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
-            <h3 className="text-base sm:text-lg font-semibold text-foreground truncate pr-2">{document.title}</h3>
+            <div className="flex items-center gap-3 min-w-0">
+              {getTypeIcon()}
+              <h3 className="text-base sm:text-lg font-semibold text-foreground truncate">{document.title}</h3>
+            </div>
             <Button variant="ghost" size="sm" onClick={onClose} className="flex-shrink-0">
               <X className="w-4 h-4" />
             </Button>
@@ -46,52 +59,80 @@ export const PreviewPanel = ({ isOpen, document, onClose }: PreviewPanelProps) =
 
           {/* Content */}
           <div className="flex-1 p-4 sm:p-6 overflow-auto">
-            <div className="space-y-4 sm:space-y-6">
-              {/* Document metadata */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Type:</span>
-                  <div className="font-medium">{document.type}</div>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Date:</span>
-                  <div className="font-medium">{document.date}</div>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Status:</span>
-                  <div className={`font-medium ${
-                    document.status === 'Completed' ? 'text-green-600' :
-                    document.status === 'In Progress' ? 'text-blue-600' :
-                    'text-orange-600'
-                  }`}>{document.status}</div>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Reference:</span>
-                  <div className="font-medium font-mono text-xs">{document.reference}</div>
-                </div>
+            <div className="space-y-5">
+              {/* Status & Type Summary */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <Badge variant={
+                  document.status === 'Confirmed' || document.status === 'Original' || document.status === 'Discharged' ? 'default' : 'secondary'
+                }>
+                  {document.status}
+                </Badge>
+                <span className="text-sm text-muted-foreground">{document.type}</span>
               </div>
 
+              {/* Core metadata */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                {document.reference && (
+                  <div>
+                    <span className="text-muted-foreground">Reference</span>
+                    <div className="font-medium font-mono text-xs mt-0.5">{document.reference}</div>
+                  </div>
+                )}
+                {document.date && (
+                  <div>
+                    <span className="text-muted-foreground">Date</span>
+                    <div className="font-medium mt-0.5">{document.date}</div>
+                  </div>
+                )}
+                {document.customer && (
+                  <div>
+                    <span className="text-muted-foreground">Customer</span>
+                    <div className="font-medium mt-0.5">{document.customer}</div>
+                  </div>
+                )}
+                {document.id && (
+                  <div>
+                    <span className="text-muted-foreground">ID</span>
+                    <div className="font-medium font-mono mt-0.5">{document.id}</div>
+                  </div>
+                )}
+              </div>
+
+              {/* All detail fields */}
+              {document.details && (
+                <div className="space-y-1">
+                  <h4 className="font-semibold text-sm text-foreground mb-3 border-b border-border pb-2">Full Details</h4>
+                  <div className="space-y-3">
+                    {Object.entries(document.details).map(([key, value]) => (
+                      <div key={key} className="text-sm">
+                        <span className="text-muted-foreground capitalize block">{key.replace(/_/g, ' ')}</span>
+                        <span className="font-medium break-words">{value as string}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Containers list if present */}
+              {document.containers && Array.isArray(document.containers) && (
+                <div>
+                  <h4 className="font-semibold text-sm text-foreground mb-2">Containers</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {document.containers.map((c: string) => (
+                      <Badge key={c} variant="outline" className="font-mono text-xs">{c}</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Document preview area */}
-              <div className="bg-muted/50 rounded-lg p-4 min-h-[300px] flex items-center justify-center">
+              <div className="bg-muted/50 rounded-lg p-4 min-h-[150px] flex items-center justify-center">
                 <div className="text-center text-muted-foreground">
-                  <FileText className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p>Document Preview</p>
+                  {getTypeIcon()}
+                  <p className="mt-2 font-medium">Document Preview</p>
                   <p className="text-sm">PDF content would be displayed here</p>
                 </div>
               </div>
-
-              {/* Additional details */}
-              {document.details && (
-                <div className="space-y-2">
-                  <h4 className="font-medium text-sm text-muted-foreground">Details</h4>
-                  {Object.entries(document.details).map(([key, value]) => (
-                    <div key={key} className="flex justify-between text-sm">
-                      <span className="text-muted-foreground capitalize">{key.replace('_', ' ')}:</span>
-                      <span className="font-medium">{value as string}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         </motion.div>
@@ -99,10 +140,3 @@ export const PreviewPanel = ({ isOpen, document, onClose }: PreviewPanelProps) =
     </AnimatePresence>
   );
 };
-
-// Fix import issue
-const FileText = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-  </svg>
-);
