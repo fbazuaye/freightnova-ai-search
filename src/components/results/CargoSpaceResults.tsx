@@ -1,7 +1,9 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { Ship, Calendar, MapPin, Anchor } from "lucide-react";
+import { Ship, Calendar, MapPin, Anchor, SearchX } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { extractSearchTerms, matchesSearch } from "@/lib/searchUtils";
 
 interface CargoSpaceResultsProps {
   searchQuery: string;
@@ -47,6 +49,22 @@ const mockCargoData = [
 ];
 
 export const CargoSpaceResults = ({ searchQuery }: CargoSpaceResultsProps) => {
+  const searchTerms = useMemo(() => extractSearchTerms(searchQuery), [searchQuery]);
+  const filteredData = useMemo(() => 
+    mockCargoData.filter(c => matchesSearch(searchTerms, c.carrier, c.vessel, c.route)),
+    [searchTerms]
+  );
+
+  if (filteredData.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+        <SearchX className="w-12 h-12 mb-4 opacity-50" />
+        <p className="text-lg font-medium">No matching cargo space found</p>
+        <p className="text-sm">Try a different carrier, vessel, or route</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-[400px]">
       {/* Empty space */}

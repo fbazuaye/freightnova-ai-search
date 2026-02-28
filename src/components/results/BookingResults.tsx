@@ -1,7 +1,9 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { Package, Calendar, Download, Eye, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { Package, Calendar, Download, Eye, CheckCircle2, Clock, AlertCircle, SearchX } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { extractSearchTerms, matchesSearch } from "@/lib/searchUtils";
 
 interface BookingResultsProps {
   searchQuery: string;
@@ -292,17 +294,30 @@ const mockBookings = [
 ];
 
 export const BookingResults = ({ searchQuery, onPreviewDocument }: BookingResultsProps) => {
+  const searchTerms = useMemo(() => extractSearchTerms(searchQuery), [searchQuery]);
+  const filteredData = useMemo(() => 
+    mockBookings.filter(b => matchesSearch(searchTerms, b.id, b.customer, b.reference, b.vessel, b.route)),
+    [searchTerms]
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-foreground">Booking Confirmations</h2>
         <div className="text-sm text-muted-foreground">
-          {mockBookings.length} bookings found
+          {filteredData.length} bookings found
         </div>
       </div>
 
+      {filteredData.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+          <SearchX className="w-12 h-12 mb-4 opacity-50" />
+          <p className="text-lg font-medium">No matching bookings found</p>
+          <p className="text-sm">Try a different booking ID, reference, or customer name</p>
+        </div>
+      ) : (
       <div className="grid gap-4">
-        {mockBookings.map((booking, index) => (
+        {filteredData.map((booking, index) => (
           <motion.div
             key={booking.id}
             initial={{ opacity: 0, y: 20 }}
@@ -392,6 +407,7 @@ export const BookingResults = ({ searchQuery, onPreviewDocument }: BookingResult
           </motion.div>
         ))}
       </div>
+      )}
     </div>
   );
 };

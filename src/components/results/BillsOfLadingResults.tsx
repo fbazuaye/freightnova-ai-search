@@ -1,7 +1,9 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { FileText, Calendar, Download, Eye, Truck, Ship } from "lucide-react";
+import { FileText, Calendar, Download, Eye, Truck, Ship, SearchX } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { extractSearchTerms, matchesSearch } from "@/lib/searchUtils";
 
 interface BillsOfLadingResultsProps {
   searchQuery: string;
@@ -312,17 +314,30 @@ const mockBLs = [
 ];
 
 export const BillsOfLadingResults = ({ searchQuery, onPreviewDocument }: BillsOfLadingResultsProps) => {
+  const searchTerms = useMemo(() => extractSearchTerms(searchQuery), [searchQuery]);
+  const filteredData = useMemo(() => 
+    mockBLs.filter(bl => matchesSearch(searchTerms, bl.id, bl.reference, bl.customer, ...bl.containers)),
+    [searchTerms]
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-foreground">Bills of Lading</h2>
         <div className="text-sm text-muted-foreground">
-          {mockBLs.length} documents found
+          {filteredData.length} documents found
         </div>
       </div>
 
+      {filteredData.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+          <SearchX className="w-12 h-12 mb-4 opacity-50" />
+          <p className="text-lg font-medium">No matching Bills of Lading found</p>
+          <p className="text-sm">Try a different B/L number, reference, or customer name</p>
+        </div>
+      ) : (
       <div className="grid gap-4">
-        {mockBLs.map((bl, index) => (
+        {filteredData.map((bl, index) => (
           <motion.div
             key={bl.id}
             initial={{ opacity: 0, y: 20 }}
@@ -418,6 +433,7 @@ export const BillsOfLadingResults = ({ searchQuery, onPreviewDocument }: BillsOf
           </motion.div>
         ))}
       </div>
+      )}
     </div>
   );
 };
