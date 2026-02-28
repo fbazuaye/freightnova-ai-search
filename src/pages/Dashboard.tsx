@@ -1,17 +1,32 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, LogOut, User } from "lucide-react";
 import { SearchBar } from "../components/SearchBar";
 import { QuickTabs } from "../components/QuickTabs";
 import { ResultsDisplay } from "../components/ResultsDisplay";
 import { PreviewPanel } from "../components/PreviewPanel";
 import { detectTab } from "@/lib/tabDetection";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("cargo-space");
   const [searchQuery, setSearchQuery] = useState("");
   const [previewDocument, setPreviewDocument] = useState(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const { user, profile, signOut } = useAuth();
+
+  const initials = profile?.full_name
+    ? profile.full_name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : user?.email?.charAt(0).toUpperCase() ?? "U";
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -36,6 +51,37 @@ const Dashboard = () => {
         transition={{ duration: 0.6 }}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* User menu */}
+          <div className="flex justify-end mb-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={profile?.avatar_url ?? undefined} />
+                    <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="px-2 py-1.5">
+                  <p className="text-sm font-medium">{profile?.full_name || "User"}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email}</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-xs text-muted-foreground cursor-default">
+                  Plan: <span className="ml-1 capitalize font-medium">{profile?.subscription_tier ?? "free"}</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
           <div className="text-center mb-6 sm:mb-8">
             <motion.h1 
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary mb-2"
