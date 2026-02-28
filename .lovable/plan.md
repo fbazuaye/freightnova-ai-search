@@ -1,39 +1,54 @@
 
 
-## Plan: Add Search Filtering to Show Only Matching Results
+## Fix: Search Not Finding Most Container and B/L Numbers
 
-### Problem
-Currently, when you type a container number (e.g., "TCLU9988776") or a B/L number (e.g., "MSKU12345"), the app switches to the correct tab but displays **all 20 results** instead of filtering to just the matching ones.
+### Root Cause
+The tab auto-routing in `Dashboard.tsx` (lines 18-26) only recognizes a few hardcoded prefixes (`msku`, `tclu`) to switch tabs. Any other container or B/L prefix (CMAU, HLBU, OOLU, MAEU, EISU, YMLU, ZIMU, ONEU, CSLU, SEGU, MSCU, HLXU, TRHU, PCIU, WANU, KMTU, HDMU, KKFU) doesn't match, so the app stays on the wrong tab and shows "no results."
 
 ### Solution
-Add filtering logic inside each results component so that when a search query is entered, only results matching the query are shown. When no search query is present, all results display as before.
+Implement smart auto-detection that searches across all mock datasets to determine the correct tab, rather than relying on keyword/prefix matching.
 
 ### Changes
 
-**1. TrackingResults.tsx** -- Filter containers by ID
-- Filter `mockTracking` against `searchQuery`, matching on the container `id` field (case-insensitive)
-- If `searchQuery` is empty or has no tracking-related keywords, show all results
-- Show a "No results found" message if the filter returns nothing
+**1. Create `src/lib/tabDetection.ts`** -- Smart tab detection utility
+- Import all mock data arrays (or their IDs) from the result components
+- When a search query is entered, check if the extracted search terms match any entry in each dataset
+- Return the tab that has matching results, falling back to keyword-based detection
+- Priority order: Tracking > Bills of Lading > Bookings > Cargo Space
 
-**2. BillsOfLadingResults.tsx** -- Filter B/Ls by number, reference, and customer
-- Filter `mockBLs` against `searchQuery`, matching on `id`, `reference`, `customer`, and `containers` array (case-insensitive)
-- Same empty/no-match handling
+**2. Update `Dashboard.tsx`** -- Use smart detection
+- Replace the hardcoded prefix matching in `handleSearch` with the new detection utility
+- The logic will:
+  1. First try to find which dataset contains a match for the search terms
+  2. If a match is found in tracking data, switch to tracking tab
+  3. If a match is found in B/L data, switch to bills-lading tab
+  4. If a match is found in bookings, switch to bookings tab
+  5. Fall back to keyword-based detection (e.g., "track" -> tracking tab) if no direct match
 
-**3. BookingResults.tsx** -- Filter bookings by ID, customer, and reference
-- Filter `mockBookings` against `searchQuery`, matching on `id`, `customer`, and `reference` (case-insensitive)
-- Same empty/no-match handling
-
-**4. CargoSpaceResults.tsx** -- Apply same pattern for cargo space results
-
-### How Filtering Works
-Each component will:
-1. Extract relevant keywords from `searchQuery` (stripping filler words like "track", "container", "bill", "lading", "retrieve", "show", "booking", "for", "customer", etc.)
-2. Filter the mock data array to entries where any searchable field contains the remaining keyword(s)
-3. If no meaningful keywords remain after stripping, show all results
-4. Display a friendly "No matching results" message when the filter produces zero results
+**3. Export mock data arrays** from each results component
+- Move mock data arrays to a shared location (or export them) so the tab detection utility can search across them without duplicating data
 
 ### Technical Details
-- Filtering happens inside each component using `useMemo` for performance
-- A shared helper function extracts search terms by removing common filler/command words
-- Matching is case-insensitive and partial (e.g., "TCLU" matches "TCLU9988776")
+
+The detection function will:
+```text
+extractSearchTerms("CMAU4455881")
+  -> ["cmau4455881"]
+  -> check tracking mock IDs -> found "CMAU4455881" -> return "tracking"
+
+extractSearchTerms("HLBU7700123") 
+  -> ["hlbu7700123"]
+  -> check tracking mock IDs -> not found
+  -> check B/L mock IDs -> found "HLBU7700123" -> return "bills-lading"
+```
+
+An alternative simpler approach: detect any alphanumeric string that looks like a container/B/L pattern (4 letters + 7 digits) and search all tabs. This avoids needing to hardcode prefixes.
+
+### File Changes Summary
+1. **New file**: `src/lib/tabDetection.ts` - smart tab routing logic
+2. **New file**: `src/data/mockData.ts` - centralized mock data (moved from components)
+3. **Modified**: `Dashboard.tsx` - use new detection
+4. **Modified**: `TrackingResults.tsx` - import mock data from shared file
+5. **Modified**: `BillsOfLadingResults.tsx` - import mock data from shared file
+6. **Modified**: `BookingResults.tsx` - import mock data from shared file
 
