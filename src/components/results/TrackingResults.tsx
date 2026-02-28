@@ -4,6 +4,7 @@ import { MapPin, Ship, Calendar, Bell, CheckCircle2, Clock, Eye, Download, Searc
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { extractSearchTerms, matchesSearch } from "@/lib/searchUtils";
+import { exportToExcel } from "@/lib/excelExport";
 
 interface TrackingResultsProps {
   searchQuery: string;
@@ -438,9 +439,19 @@ export const TrackingResults = ({ searchQuery, onPreviewDocument }: TrackingResu
                     <Eye className="w-4 h-4 mr-2" />
                     Preview
                   </Button>
-                  <Button variant="outline" size="sm">
-                    <Bell className="w-4 h-4 mr-2" />
-                    Set Notification
+                  <Button variant="outline" size="sm" onClick={() => exportToExcel([{
+                    Container_ID: container.id,
+                    Vessel: container.vessel,
+                    Current_Location: container.currentLocation,
+                    Status: container.status,
+                    POL: container.pol,
+                    POD: container.pod,
+                    ETA: container.eta,
+                    Last_Update: container.lastUpdate,
+                    Progress: `${container.progress}%`
+                  }], `Tracking_${container.id}`)}>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download
                   </Button>
                 </div>
               </div>

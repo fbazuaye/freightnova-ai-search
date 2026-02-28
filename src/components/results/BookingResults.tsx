@@ -4,6 +4,7 @@ import { Package, Calendar, Download, Eye, CheckCircle2, Clock, AlertCircle, Sea
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { extractSearchTerms, matchesSearch } from "@/lib/searchUtils";
+import { exportToExcel } from "@/lib/excelExport";
 
 interface BookingResultsProps {
   searchQuery: string;
@@ -396,7 +397,17 @@ export const BookingResults = ({ searchQuery, onPreviewDocument }: BookingResult
                       <Eye className="w-4 h-4 mr-2" />
                       Preview
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => exportToExcel([{
+                      Booking_ID: booking.id,
+                      Customer: booking.customer,
+                      Reference: booking.reference,
+                      Vessel: booking.vessel,
+                      Route: booking.route,
+                      Containers: `${booking.containers} TEU`,
+                      Booking_Date: booking.bookingDate,
+                      ETD: booking.etd,
+                      Status: booking.status
+                    }], `Booking_${booking.id}`)}>
                       <Download className="w-4 h-4 mr-2" />
                       Download
                     </Button>

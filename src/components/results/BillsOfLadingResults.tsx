@@ -4,6 +4,7 @@ import { FileText, Calendar, Download, Eye, Truck, Ship, SearchX } from "lucide-
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { extractSearchTerms, matchesSearch } from "@/lib/searchUtils";
+import { exportToExcel } from "@/lib/excelExport";
 
 interface BillsOfLadingResultsProps {
   searchQuery: string;
@@ -422,7 +423,18 @@ export const BillsOfLadingResults = ({ searchQuery, onPreviewDocument }: BillsOf
                       <Eye className="w-4 h-4 mr-2" />
                       Preview
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => exportToExcel([{
+                      BL_Number: bl.id,
+                      Reference: bl.reference,
+                      Customer: bl.customer,
+                      Vessel: bl.vessel,
+                      Voyage: bl.voyage,
+                      POL: bl.pol,
+                      POD: bl.pod,
+                      Issue_Date: bl.issueDate,
+                      Status: bl.status,
+                      Containers: bl.containers.join(', ')
+                    }], `BL_${bl.id}`)}>
                       <Download className="w-4 h-4 mr-2" />
                       Download
                     </Button>
