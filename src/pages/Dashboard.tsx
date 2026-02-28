@@ -5,6 +5,7 @@ import { SearchBar } from "../components/SearchBar";
 import { QuickTabs } from "../components/QuickTabs";
 import { ResultsDisplay } from "../components/ResultsDisplay";
 import { PreviewPanel } from "../components/PreviewPanel";
+import { detectTab } from "@/lib/tabDetection";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("cargo-space");
@@ -14,15 +15,9 @@ const Dashboard = () => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    // Auto-detect search type and switch tab
-    if (query.toLowerCase().includes("space") || query.toLowerCase().includes("shanghai")) {
-      setActiveTab("cargo-space");
-    } else if (query.toLowerCase().includes("booking") || query.toLowerCase().includes("abc")) {
-      setActiveTab("bookings");
-    } else if (query.toLowerCase().includes("bill") || query.toLowerCase().includes("lading") || query.toLowerCase().includes("msku") || query.toLowerCase().includes("tclu")) {
-      setActiveTab("bills-lading");
-    } else if (query.toLowerCase().includes("track") || query.toLowerCase().includes("container")) {
-      setActiveTab("tracking");
+    const detected = detectTab(query);
+    if (detected) {
+      setActiveTab(detected);
     }
   };
 
