@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,8 @@ const signUpSchema = signInSchema.extend({
 });
 
 const Auth = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [isSignUp, setIsSignUp] = useState(searchParams.get("mode") === "signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -31,7 +32,7 @@ const Auth = () => {
 
   // Redirect if already logged in
   if (session) {
-    navigate("/", { replace: true });
+    navigate("/dashboard", { replace: true });
     return null;
   }
 
@@ -52,7 +53,7 @@ const Auth = () => {
         const parsed = signInSchema.parse({ email, password });
         const { error } = await signIn(parsed.email, parsed.password);
         if (error) throw error;
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (error: any) {
       if (error instanceof z.ZodError) {
